@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+<!-- Contenido de la página -->
+{% block content %}
+
+<!-- Sección de bienvenida -->
+<section class="mt-container mt-hero" {{ value }}>
+    <div class="mt-hero-top">
+        <div class="mt-hero-copy">
+            <div class="mt-eyebrow">// blog posts</div>
+            <h1 class="mt-hero-title">{% block title %}Bienvenido a BLOG SPOTS{% endblock %}</h1>
+            <p class="mt-lead">Aquí podrás compartir tus ideas, pensamientos y experiencias con una comunidad global
+                de lectores. Publica tus blogs en pocos pasos, con imágenes y videos que den vida a tus
+                publicaciones.</p>
+            {% if g.user %}
+            <a href="{{ url_for('post.create') }}" class="mt-btn mt-btn-lg">Publica tu blog</a>
+            {% else %}
+            <a href="{{ url_for('auth.register') }}" class="mt-btn mt-btn-lg">Regístrate</a>
+            {% endif %}
+        </div>
+        <div class="mt-hero-art">
+            <img src="{{ url_for('static', filename='img/bloguer.jpg') }}" alt="Ilustración de una persona leyendo un blog en su laptop" class="mt-hero-illustration">
+        </div>
+    </div>
+
+    <!-- Diagrama: escribir -> publicar -> compartir -->
+    <div class="mt-diagram" aria-hidden="true">
+        <svg viewBox="0 0 960 320" xmlns="http://www.w3.org/2000/svg" font-family="IBM Plex Mono, monospace">
+            <defs>
+                <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#dcdcdc" stroke-width="1" />
+                </pattern>
+                <radialGradient id="fade" cx="50%" cy="50%" r="60%">
+                    <stop offset="55%" stop-color="#fff" />
+                    <stop offset="100%" stop-color="#000" />
+                </radialGradient>
+                <mask id="gridmask">
+                    <rect width="960" height="320" fill="url(#fade)" />
+                </mask>
+            </defs>
+
+            <rect width="960" height="320" fill="url(#grid)" mask="url(#gridmask)" />
+
+            <!-- Conectores izquierda -->
+            <g fill="none" stroke-width="2">
+                <path class="mt-line" pathLength="1" d="M190 70 H315 V170 H440" stroke="#dcdcdc" />
+                <path class="mt-line mt-line-main" pathLength="1" d="M190 170 H440" stroke="#29735c" />
+                <path class="mt-line" pathLength="1" d="M190 270 H315 V170" stroke="#dcdcdc" />
+                <!-- Conectores derecha -->
+                <path class="mt-line mt-line-r" pathLength="1" d="M770 70 H645 V170 H520" stroke="#dcdcdc" />
+                <path class="mt-line mt-line-main mt-line-r" pathLength="1" d="M770 170 H520" stroke="#29735c" />
+                <path class="mt-line mt-line-r" pathLength="1" d="M770 270 H645 V170" stroke="#dcdcdc" />
+            </g>
+            <g fill="#29735c" class="mt-dots">
+                <circle cx="315" cy="170" r="4" />
+                <circle cx="645" cy="170" r="4" />
+            </g>
+
+            <!-- Etiquetas -->
+            <g font-size="14" font-weight="500" fill="#424242" text-anchor="middle" class="mt-labels">
+                <g fill="#fff" stroke="#cbcac8" class="mt-chips">
+                    <rect x="40" y="54" width="150" height="32" />
+                    <rect x="40" y="154" width="150" height="32" />
+                    <rect x="40" y="254" width="150" height="32" />
+                    <rect x="770" y="54" width="150" height="32" />
+                    <rect x="770" y="154" width="150" height="32" />
+                    <rect x="770" y="254" width="150" height="32" />
+                </g>
+                <text x="115" y="75" stroke="none">ESCRIBE</text>
+                <text x="115" y="175" stroke="none">EDITA</text>
+                <text x="115" y="275" stroke="none">AÑADE IMÁGENES</text>
+                <text x="845" y="75" stroke="none">PUBLICA</text>
+                <text x="845" y="175" stroke="none">COMPARTE</text>
+                <text x="845" y="275" stroke="none">LEE</text>
+            </g>
+
+            <!-- Nodo central -->
+            <g class="mt-node">
+            <rect x="440" y="130" width="80" height="80" fill="#151515" />
+            <image href="{{ url_for('static', filename='img/bp-light.png') }}" x="452" y="142" width="56" height="56" />
+            </g>
+        </svg>
+    </div>
+</section>
+
+<!-- Buscador -->
+<div class="mt-container">
+    <div class="mt-search" data-reveal>
+        <div class="mt-eyebrow">// buscar</div>
+        <h2 class="mt-section-title">¿Buscas algo en particular?</h2>
+        <p class="mt-lead">Encuentra blogs específicos escribiendo una palabra clave o frase del título.</p>
+        <form class="mt-search-form" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input class="mt-input" type="search" name="search" placeholder="Buscar" aria-label="Buscar">
+            <button type="submit" class="mt-btn mt-btn-lg">Buscar</button>
+        </form>
+    </div>
+</div>
+
+<!-- Blogs -->
+<main class="mt-container">
+    {% if posts %}
+    <div class="mt-grid">
+        {% for post in posts | reverse %}
+        {% set author = get_user(post.author) %}
+        <article class="mt-card" data-reveal>
+            <div class="mt-eyebrow">{{ post.created.strftime('%d de %B %Y') }}</div>
+            <h3>{{ post.title }}</h3>
+            <p class="mt-info">{{ post.info }}</p>
+            <a href="{{ url_for('home.blog', url=post.url) }}" class="mt-more">Continuar leyendo →</a>
+            <div class="mt-author">
+                {% if author.photo is none %}
+                <img src="{{ url_for('static', filename='img/user-dark.png') }}" alt="" class="rounded-circle">
+                {% else %}
+                <img src="{{ url_for('static', filename=author.photo) }}" alt="" class="rounded-circle">
+                {% endif %}
+                <span><b>{{ author.username }}</b></span>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="mt-empty">No se encontraron blogs.</p>
+    {% endif %}
+</main>
+
+<script>
+    // Título: cada palabra entra con un pequeño retraso
+    document.querySelectorAll('.mt-hero-title').forEach(function (h) {
+        var words = h.textContent.trim().split(/\s+/);
+        h.textContent = '';
+        words.forEach(function (w, i) {
+            var span = document.createElement('span');
+            span.className = 'word';
+            span.style.setProperty('--i', i);
+            span.textContent = w;
+            h.appendChild(span);
+            if (i < words.length - 1) h.appendChild(document.createTextNode(' '));
+        });
+    });
+
+    // Buscador y tarjetas aparecen al hacer scroll
+    (function () {
+        var items = document.querySelectorAll('[data-reveal]');
+        if (!('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        document.documentElement.classList.add('js-reveal');
+        var io = new IntersectionObserver(function (entries) {
+            entries.forEach(function (e) {
+                if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+            });
+        }, { threshold: 0.12 });
+        items.forEach(function (el, i) {
+            el.style.transitionDelay = (i % 3) * 80 + 'ms';
+            io.observe(el);
+        });
+    })();
+</script>
+
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+<!-- Contenido de la página -->
+{% block content %}
+
+<section class="mt-container mt-panel mt-profile">
+    <div class="mt-eyebrow">// mi perfil</div>
+    <h1 class="mt-section-title">{% block title %}Perfil de usuario{% endblock %}</h1>
+    <p class="mt-lead">Actualiza tu foto, tu nombre de usuario o tu contraseña.</p>
+
+    <hr class="mt-post-rule">
+
+    <form method="post" enctype="multipart/form-data" class="mt-profile-grid">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <div class="mt-profile-photo">
+            {% if user.photo is none %}
+            <img src="{{ url_for('static', filename='img/user-dark.png') }}" alt="Foto de perfil">
+            {% else %}
+            <img src="{{ url_for('static', filename=user.photo) }}" alt="Foto de perfil">
+            {% endif %}
+            <label for="photo" class="mt-btn mt-btn-outline mt-file-label">Cambiar foto</label>
+            <input type="file" id="photo" name="photo" class="mt-file-input" accept="image/png,image/jpeg,image/gif,image/webp">
+        </div>
+
+        <div class="mt-profile-fields">
+            <div class="mt-field">
+                <label for="username" class="mt-form-label">Nombre de usuario</label>
+                <input type="text" class="mt-input" id="username" name="username" value="{{ user.username }}" required>
+            </div>
+            <div class="mt-field">
+                <label for="email" class="mt-form-label">Correo electrónico</label>
+                <input type="email" class="mt-input" id="email" name="email" value="{{ user.email }}" required>
+            </div>
+            <div class="mt-field">
+                <label for="password" class="mt-form-label">Cambiar contraseña</label>
+                <input type="password" class="mt-input" id="password" name="password"
+                    placeholder="Déjalo en blanco para mantener la actual">
+            </div>
+
+            <div class="mt-form-actions">
+                <button type="submit" class="mt-btn mt-btn-lg">Guardar cambios</button>
+            </div>
+        </div>
+    </form>
+</section>
+
+{% endblock %}

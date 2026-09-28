@@ -1,0 +1,23 @@
+# Entorno virtual
+env-blog/
+venv/
+.venv/
+
+# Python
+__pycache__/
+*.pyc
+
+# Base de datos local / instancia de Flask
+instance/
+
+# Variables de entorno
+.env
+
+# Fotos de perfil subidas por usuarios
+blogr/static/media/*
+!blogr/static/media/.gitkeep
+
+# Editor / SO
+.vscode/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="mt-container mt-panel">
+    <div class="mt-eyebrow">// mis blogs</div>
+    <div class="mt-panel-header">
+        <div>
+            <h1 class="mt-section-title">{% block title %}Tus publicaciones{% endblock %}</h1>
+            <p class="mt-lead">Aquí puedes editar, revisar o eliminar los blogs que has publicado.</p>
+        </div>
+        <a href="{{ url_for('post.create') }}" class="mt-btn mt-btn-lg">Crear blog</a>
+    </div>
+
+    {% if posts %}
+    <table class="mt-table">
+        <thead>
+            <tr>
+                <th>Título</th>
+                <th>Fecha</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for post in posts %}
+            <tr>
+                <td class="mt-table-title">{{ post.title }}</td>
+                <td class="mt-table-date">{{ post.created.strftime('%d de %B %Y') }}</td>
+                <td>
+                    <div class="mt-table-actions">
+                        <a href="{{ url_for('home.blog', url=post.url) }}" class="mt-btn-text">Ver</a>
+                        <a href="{{ url_for('post.update', id=post.id) }}" class="mt-btn-text">Editar</a>
+                        <form action="{{ url_for('post.delete', id=post.id) }}" method="post"
+                            onsubmit="return confirm('¿Eliminar este blog?');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="mt-btn-text mt-btn-text-danger">Eliminar</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="mt-empty">Aún no has publicado ningún blog. <a href="{{ url_for('post.create') }}">Crea el primero →</a></p>
+    {% endif %}
+</section>
+
+{% endblock %}
+
+{% block message %} alert-success {% endblock %}

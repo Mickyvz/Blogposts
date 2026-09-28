@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- Página de blog -->
+{% set author = get_user(post.author) %}
+
+<div class="mt-post">
+    <div class="mt-container">
+        <a href="{{ url_for('home.index') }}" class="mt-back-link">← Volver a inicio</a>
+
+        <article class="mt-post-card">
+            <div class="mt-post-meta">
+                <span class="mt-chip">Artículo</span>
+                <span class="mt-post-meta-text">{{ post.created.strftime('%d de %B %Y') }} · {{ reading_time }} min
+                    de lectura</span>
+            </div>
+
+            <h1 class="mt-post-title">{% block title %}{{ post.title }}{% endblock %}</h1>
+            <p class="mt-lead mt-post-info">{{ post.info }}</p>
+
+            <div class="mt-post-author">
+                {% if author.photo is none %}
+                <img src="{{ url_for('static', filename='img/user-dark.png') }}" alt="" class="rounded-circle">
+                {% else %}
+                <img src="{{ url_for('static', filename=author.photo) }}" alt="" class="rounded-circle">
+                {% endif %}
+                <span><b>{{ author.username }}</b></span>
+            </div>
+
+            <hr class="mt-post-rule">
+
+            <div class="mt-eyebrow">// contenido</div>
+            <div class="mt-post-content">
+                {{ post.content | clean_html }}
+            </div>
+        </article>
+    </div>
+</div>
+
+{% endblock %}

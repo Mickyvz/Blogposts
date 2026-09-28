@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="mt-container mt-form-page">
+    <a href="{{ url_for('post.posts') }}" class="mt-back-link">← Volver a mis blogs</a>
+
+    <div class="mt-eyebrow">// editar blog</div>
+    <h1 class="mt-section-title">{% block title %}Editar Blog{% endblock %}</h1>
+
+    <form method="POST" action="{{ url_for('post.update', id=post.id) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <div class="mt-field">
+            <label for="title" class="mt-form-label">Título</label>
+            <input type="text" class="mt-input" id="title" name="title" value="{{ post.title }}" required
+                placeholder="Título del blog">
+        </div>
+
+        <div class="mt-field">
+            <label for="info" class="mt-form-label">Descripción</label>
+            <textarea class="mt-input mt-textarea" id="info" name="info" rows="3"
+                placeholder="Breve descripción del blog">{{ post.info }}</textarea>
+        </div>
+
+        <div class="mt-field">
+            <label for="contentInput" class="mt-form-label">Contenido</label>
+            <div class="mt-editor-wrap">
+                {{ ckeditor.create(value=post.content) }}
+            </div>
+        </div>
+
+        <div class="mt-form-actions">
+            <button type="submit" class="mt-btn mt-btn-lg">Actualizar</button>
+            <a href="{{ url_for('post.posts') }}" class="mt-btn-text">Cancelar</a>
+        </div>
+    </form>
+</section>
+
+{% endblock %}
